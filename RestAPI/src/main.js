@@ -6,6 +6,28 @@
  */
 
 const http = require("http");
+
+/**
+ * @typedef Post
+ * @property {string} id
+ * @property {string} title
+ * @property {string} content
+ */
+
+/** @type {Post[]} */
+const posts = [
+  {
+    id: "my_first_post",
+    title: "My first post",
+    content: "Hello!",
+  },
+  {
+    id: "my_second_post",
+    title: "My Second Post",
+    content: "Second post!",
+  },
+];
+
 /**
  * Post
  *
@@ -15,13 +37,19 @@ const http = require("http");
  */
 
 const server = http.createServer((req, res) => {
+  const POST_ID_REGEX = /^\/posts\/([a-zA-Z0-9-_]+)$/;
+  const postIdRegexResult =
+    (req.url && POST_ID_REGEX.exec(req.url)) || undefined;
   // console.log(req.url);
   // console.log("Requst accepted");
   if (req.url === "/posts" && req.method === "GET") {
     res.statusCode = 200;
     res.end("List of Posts");
     return;
-  } else if (req.url && /^\/posts\/[a-zA-Z0-9-_]+$/.test(req.url)) {
+  } else if (postIdRegexResult) {
+    // GET /posts/:id
+    const postId = postIdRegexResult[1];
+    console.log(`postId: ${postId}`);
     res.statusCode = 200;
     res.end("Some content of the post");
     return;
