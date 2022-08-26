@@ -6,7 +6,6 @@
  */
 
 const http = require("http");
-const { resolve } = require("path");
 
 const { routes } = require("./api");
 
