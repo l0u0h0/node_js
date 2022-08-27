@@ -49,6 +49,9 @@ const app = express();
 
 app.use(express.json());
 
+app.set("views", "src/views");
+app.set("view engine", "pug");
+
 const PORT = 5000;
 
 // 메서드에 따라 라우팅 함수가 다르다.
@@ -71,18 +74,29 @@ const USERS = {
   10: {
     name: "foo",
   },
+  11: {
+    name: "bar",
+  },
 };
 
 userRouter.param("id", (req, res, next, value) => {
-  console.log(`id param`, value);
   // @ts-ignore
   req.user = USERS[value];
   next();
 });
 
 userRouter.get("/:id", (req, res) => {
-  // @ts-ignore
-  res.send(req.user);
+  const resMimeType = req.accepts(["json", "html"]);
+
+  if (resMimeType === "json") {
+    // @ts-ignore
+    res.send(req.user);
+  } else if (resMimeType === "html") {
+    res.render("user-profile", {
+      // @ts-ignore
+      name: req.user.name,
+    });
+  }
 });
 
 userRouter.post("/", (req, res) => {
