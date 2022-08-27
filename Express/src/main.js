@@ -2,12 +2,12 @@
 
 /* eslint-disable no-console */
 
-const express = require("express");
-const fs = require("fs");
+// const express = require("express");
+// const fs = require("fs");
 
-const app = express();
+// const app = express();
 
-const PORT = 5000;
+// const PORT = 5000;
 
 // app.use(
 //   "/",
@@ -39,6 +39,18 @@ const PORT = 5000;
 //   );
 // });
 
+const express = require("express");
+// const bodyParser = require("body-parser");
+const userRouter = express.Router();
+
+const app = express();
+
+// app.use(bodyParser.json());
+
+app.use(express.json());
+
+const PORT = 5000;
+
 // 메서드에 따라 라우팅 함수가 다르다.
 /** path pattern
  *
@@ -51,13 +63,44 @@ const PORT = 5000;
  * - ['/abc', '/xyz'] 같이 배열 사용 가능
  * - 배열에 정규식 사용 가능
  */
-app.get(["/abc", "/xyz"], (req, res) => {
-  res.send("Root - GET");
+userRouter.get("/", (req, res) => {
+  res.send("User list");
 });
 
-app.post("/", (req, res) => {
-  res.send("Root - POST");
+const USERS = {
+  10: {
+    name: "foo",
+  },
+};
+
+userRouter.param("id", (req, res, next, value) => {
+  console.log(`id param`, value);
+  // @ts-ignore
+  req.user = USERS[value];
+  next();
 });
+
+userRouter.get("/:id", (req, res) => {
+  // @ts-ignore
+  res.send(req.user);
+});
+
+userRouter.post("/", (req, res) => {
+  // Register User
+  res.send("User Registerd");
+});
+
+userRouter.post("/:id/name", (req, res) => {
+  // @ts-ignore
+  const { user } = req;
+  const { name } = req.body;
+
+  user.name = name;
+
+  res.send(`User Name updated: ${name}`);
+});
+
+app.use("/users", userRouter);
 
 app.listen(PORT, () => {
   console.log(`The Express server is listening at port: ${PORT}`);
