@@ -2,14 +2,19 @@
 
 const express = require("express");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 const router = express.Router();
 
 const USERS = {
   10: {
     name: "foo",
+    profileimg: undefined,
   },
   11: {
     name: "bar",
+    profileimg: undefined,
   },
 };
 
@@ -48,6 +53,9 @@ router.get("/:id", (req, res) => {
     res.render("user-profile", {
       // @ts-ignore
       name: req.user.name,
+      userId: req.params.id,
+      // @ts-ignore
+      profileimgurl: `/uploads/${req.user.profileimg}`,
     });
   }
 });
@@ -64,6 +72,16 @@ router.post("/:id/name", (req, res) => {
   user.name = name;
 
   res.send(`User Name updated: ${name}`);
+});
+
+// input name이 upload 미들웨어 싱글 인자로 들어옴.
+router.post("/:id/profile", upload.single("profile"), (req, res) => {
+  // @ts-ignore
+  const { user } = req;
+
+  user.profileimg = req.file?.filename;
+
+  res.send("User Profile image upload");
 });
 
 module.exports = router;

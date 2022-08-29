@@ -3,5 +3,11 @@ html
     link(rel="stylesheet" href="/public/index.css" )
   body 
     h1 User Profile Page
-    h2.gold Nickname 
-    div.green.big= name
+    h2 Nickname 
+    div.big= name
+
+    h2 Profile 
+    img(src=profileimgurl).profileimg
+    form(action=`/users/${userId}/profile` method="POST" enctype="multipart/form-data")
+      input(type="file" name="profile")
+      button upload Profile Picture
